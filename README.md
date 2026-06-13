@@ -15,7 +15,7 @@ Our engineering philosophy focuses on **Hardware-Efficient Reactive Intelligence
 
 ## The Team
 
-Our team consists of 3 members and a coach, we are Team44 from Ghana. This is our second year competing together in WRO Future Engineers, but this is our first year for some team members.
+Our team consists of 3 members and a coach, we are mc-squared from Ghana.
 
 > Members
 
