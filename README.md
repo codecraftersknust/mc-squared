@@ -1,15 +1,15 @@
 #  Team mc-squared — WRO 2026 Future Engineers
 
 ![Team Logo](logo.png)
-*Designed by mc-squared — Engineering with Precision*
+*Official codecraftersknust logo*
 
 ---
 
-## Introduction & Philosophy
+## Introduction
 
 Welcome to the official repository of **mc-squared**. We are a passionate robotics team competing in the **2026 World Robot Olympiad (WRO) Future Engineers Challenge**. 
-
-Our engineering philosophy focuses on **Hardware-Efficient Reactive Intelligence**. Instead of overworking our primary compute layers with heavy mapping overhead (SLAM), we engineered a low-latency, high-frequency **Parallel PID Control Loop** integrated with real-time **Computer Vision detection**. This allows our custom 4-wheeled vehicle to execute aggressive Time Attack laps with split-second decision-making.
+We hope our approach to the 2026 WRO Future Engineers can provide some insights to you in whichever endeavor you might be on. 
+Explore and learn on our repository and also, feel free to reach out to us with any questions through our contact provided below
 
 ---
 
