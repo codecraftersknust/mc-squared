@@ -1,17 +1,14 @@
 from rplidar import RPLidar
 
-PORT = "/dev/ttyUSB0"
+PORT = "/dev/ttyUSB1"
 
 lidar = RPLidar(PORT)
 
 try:
-    # Stop scanning if active
     lidar.stop()
-
-    # Stop the motor
     lidar.stop_motor()
-
+    lidar.clean_input()
 finally:
     lidar.disconnect()
 
-print("LiDAR is now idle.")
+print("LiDAR reset.")

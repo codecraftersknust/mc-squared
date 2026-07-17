@@ -3,14 +3,14 @@ import serial
 from rplidar import RPLidar
 
 # ---------- Configuration ----------
-LIDAR_PORT = '/dev/ttyUSB0'
-ARDUINO_PORT = '/dev/ttyUSB1'
+LIDAR_PORT = '/dev/ttyUSB1'
+ARDUINO_PORT = '/dev/ttyUSB0'
 BAUD_RATE = 115200
 
 # PID Constants
 Kp = 0.5
-Ki = 0.0
-Kd = 0.01
+Ki = 0.005
+Kd = 0.1
 dt = 0.1  # seconds
 
 # Steering limits
@@ -19,14 +19,12 @@ STEERING_CENTER = 90
 STEERING_MAX = 135
 
 # ESC values
-BASE_THROTTLE = 1550
+BASE_THROTTLE = 1765
 STOP_THROTTLE = 1500
 
-# Desired distance from left wall (mm)
-TARGET_DISTANCE = 150
 
 # ---------- Setup ----------
-lidar = RPLidar(LIDAR_PORT)
+lidar = None
 ser = serial.Serial(ARDUINO_PORT, BAUD_RATE, timeout=1)
 time.sleep(2)
 
@@ -37,7 +35,8 @@ integral = 0
 
 # ---------- Helper Functions ----------
 def send_to_arduino(throttle, steer):
-    cmd = f"<THROTTLE:{int(throttle)}><STEER:{int(steer)}>"
+    # Send comma-separated string ending with '\n' to match Arduino's parser
+    cmd = f"{int(steer)},{int(throttle)}\n"
     ser.write(cmd.encode())
 
 
@@ -65,29 +64,27 @@ def pid_control(error, prev_error, integral, kp, ki, kd, dt):
 
 # ---------- Main Loop ----------
 try:
-    lidar.start_motor()
-    print("Starting LiDAR wall-following...")
-
+    lidar = RPLidar(LIDAR_PORT)
+    
+    try:
+        lidar.stop()
+    except:
+        pass
+    
     for scan in lidar.iter_scans():
-
+        
         # Average distance to the left wall
         left_distance = average_distance(scan, (265, 310))
 
+        # Ensure Left distance exists before calculating PID error
         if left_distance is None:
+            # Safely skip this scan if any wall signal is missing
             continue
 
         # Calculate PID error
-        error = left_distance - TARGET_DISTANCE
+        error = left_distance - 200
 
-        control, integral = pid_control(
-            error,
-            prev_error,
-            integral,
-            Kp,
-            Ki,
-            Kd,
-            dt
-        )
+        control, integral = pid_control(error, prev_error, integral, Kp, Ki, Kd, dt)
 
         prev_error = error
 
@@ -95,14 +92,9 @@ try:
         control = max(min(control, 500), -500)
 
         # Convert PID output to steering angle
-        steering_angle = STEERING_CENTER + (
-            control / 500.0
-        ) * (STEERING_MAX - STEERING_CENTER)
+        steering_angle = STEERING_CENTER + (control / 500.0) * (STEERING_MAX - STEERING_CENTER)
 
-        steering_angle = max(
-            min(steering_angle, STEERING_MAX),
-            STEERING_MIN
-        )
+        steering_angle = max(min(steering_angle, STEERING_MAX), STEERING_MIN)
 
         send_to_arduino(BASE_THROTTLE, steering_angle)
 
@@ -120,9 +112,13 @@ except KeyboardInterrupt:
 finally:
     send_to_arduino(STOP_THROTTLE, STEERING_CENTER)
 
-    lidar.stop()
-    lidar.stop_motor()
-    lidar.disconnect()
+    if lidar is not None:
+        try:
+            lidar.stop()
+            lidar.stop_motor()
+            lidar.disconnect()
+        except Exception as e:
+            print(f"Error disconnecting LiDAR: {e}")
 
     ser.close()
 

@@ -28,7 +28,7 @@ void setup() {
 
   // Arm ESC (IMPORTANT)
   escMotor.writeMicroseconds(1000);
-  delay(5000);
+  delay(100);
 
   // Start motor slowly (optional safety)
   escMotor.writeMicroseconds(1600);
