@@ -9,9 +9,9 @@
 
 Welcome to the official repository of **mc-squared**. We are a passionate robotics team competing in the **2026 World Robot Olympiad (WRO) Future Engineers Challenge**. 
 
-We hope our approach to the 2026 WRO Future Engineers can provide some insights to you in whichever endeavor you might be on. 
+We hope our approach to the 2026 WRO Future Engineers Challenge provides some insights to you in whichever endeavor you might be on and inspire future participants. 
 
-Explore and learn on our repository and also, feel free to reach out to us with any questions through our contact provided below
+Explore and learn on our repository and also, feel free to reach out to us with any questions through our contacts provided below.
 
 ---
 
@@ -26,7 +26,7 @@ Our team consists of 3 members and a coach, we are mc-squared from Ghana.
 - **Caleb Alhassan** from [Kwame Nkrumah University of Science and Technology](https://www.knust.edu.gh/)
    - calebalhassan00@gmail.com
 - **Claresta Gytha Quist** from [Kwame Nkrumah University of Science and Technology](https://www.knust.edu.gh/)
-   - cgm.quist@gmail.com
+   - klaire.builds@gmail.com
 
 > Coach
 
@@ -36,7 +36,7 @@ Our team consists of 3 members and a coach, we are mc-squared from Ghana.
 > Links to our socials:
 
 - **YouTube**: https://www.youtube.com/@codecraftersknust
-   - Here you can watch videos about our preparations and other content
+   - Link attached for our channel containing preparation videos and other content
 ---
 
 ##  Repository Structure
