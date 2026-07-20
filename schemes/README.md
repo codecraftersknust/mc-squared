@@ -6,8 +6,8 @@ Our autonomous vehicle is built on a LaTrax Rally RC car chassis, modified with 
 
 The system integrates:
 
-- Intel RealSense D435i RGB-D Camera
-- RPLIDAR A1M8 360° LiDAR
+- Raspberry Pi Camera Module
+- HC-SR04 Ultrasonic Sensors
 - Raspberry Pi 4B (high-level processing)
 - Arduino Nano (low-level motor control)
 - 11.1V LiPo battery with regulated power distribution
@@ -33,26 +33,28 @@ The system integrates:
 
 ---
 
-## Intel RealSense D435i
+## Raspberry Pi Camera Module
 
-| Specification | Value                                                |
-| ------------- | ---------------------------------------------------- |
-| Type          | RGB-D Depth Camera with IMU                          |
-| Dimensions    | 90 × 25 × 25 mm                                      |
-| Power         | 5V / 1A (USB)                                        |
-| Purpose       | Lane detection, obstacle detection, depth estimation |
+| Specification           | Value                         |
+| ----------------------- | ----------------------------- |
+| Ribbon flex cable       | 15 cm × 50 cm × 30 cm         |
+| Camera Dimensions       | 25 mm × 24 mm × 9 mm          |
+| Power                   | 5V / 250 mA                   |
+| Operating Voltage.      | 5V DC                         |
+| Purpose                 | Vision processing, navigation |
 
 ---
 
-## RPLIDAR A1M8
+## HC-SR04 Ultrasonic Sensor
 
 | Specification      | Value                                        |
 | ------------------ | -------------------------------------------- |
-| Scan Range         | Up to 12 m                                   |
-| Scan Rate          | 8000 samples/sec                             |
-| Rotation Frequency | 5.5 Hz                                       |
-| Dimensions         | 97 × 70 × 55 mm                              |
-| Power              | 5V / 100 mA                                  |
+| Scan Range         | 2cm to 450 cm                                |
+| High precision     | 0.3 cm                                       |
+| Effectual Angle.   | <15°                                         |
+| Working Voltage    | 5V DC                                        |
+| Dimensions         | 45 mm × 20 mm × 15 mm                        |
+| Power              | 5V / 15 mA                                   |
 | Purpose            | Side wall detection and distance measurement |
 
 ---
@@ -110,8 +112,8 @@ The stock LaTrax Rally chassis was modified to comply with the WRO Future Engine
 
 - Designed and 3D-printed custom mounting plates for:
   - Raspberry Pi 4B
-  - Intel RealSense D435i
-  - RPLIDAR A1M8
+  - Raspberry Pi Camera Module
+  - HC-SR04 Ultrasonic Sensor
 - Implemented cable management using:
   - Braided cable sleeves
   - Zip ties
@@ -120,14 +122,14 @@ The stock LaTrax Rally chassis was modified to comply with the WRO Future Engine
 
 ## 3. Sensor Integration
 
-### Intel RealSense D435i
+### Raspberry Pi Camera Module
 
 - Mounted at the front of the vehicle.
 - Provides an optimal forward view for:
   - Lap count
   - Obstacle detection
 
-### RPLIDAR A1M8
+### HC-SR04 Ultrasonic Sensor
 
 - Mounted on the lower deck.
 - Used for:
@@ -135,7 +137,7 @@ The stock LaTrax Rally chassis was modified to comply with the WRO Future Engine
   - Right wall detection
   - Vehicle localization
 
-Sensors were positioned to minimize interference between the camera and LiDAR.
+Sensors were positioned to maximize wall detection strategy.
 
 ---
 
@@ -144,7 +146,6 @@ Sensors were positioned to minimize interference between the camera and LiDAR.
 To improve stability and handling:
 
 - Battery mounted as low as possible.
-- RPLIDAR positioned to maintain balance.
 - Left/right weight distribution carefully balanced.
 - Center of gravity verified after assembly.
 
