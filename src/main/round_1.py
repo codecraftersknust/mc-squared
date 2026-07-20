@@ -10,7 +10,7 @@ BAUD_RATE = 115200
 # PID Constants
 Kp = 0.5
 Ki = 0.005
-Kd = 0.1
+Kd = 0.08
 dt = 0.1  # seconds
 
 # Steering limits

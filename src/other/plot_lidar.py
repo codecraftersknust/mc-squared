@@ -18,7 +18,6 @@ ax.set_rlim(0, 3000)             # Max range in mm (adjust if needed)
 try:
     print("LIDAR info:", lidar.get_info())
     print("LIDAR health:", lidar.get_health())
-    lidar.start_motor()
 
     for scan in lidar.iter_scans():
         angles = []
@@ -40,7 +39,6 @@ except KeyboardInterrupt:
     print("Stopping...")
 
 finally:
-    lidar.stop()
     lidar.stop_motor()
     lidar.disconnect()
     print("LIDAR disconnected.")

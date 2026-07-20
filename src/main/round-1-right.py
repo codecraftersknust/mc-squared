@@ -9,15 +9,15 @@ import RPi.GPIO as GPIO
 ARDUINO_PORT = '/dev/ttyUSB0'
 BAUD_RATE = 115200
 
-# Left Ultrasonic Pins
-LEFT_TRIG = 23
-LEFT_ECHO = 24
+# Right Ultrasonic Pins
+RIGHT_TRIG = 27
+RIGHT_ECHO = 22
 
 # Setpoints & Thresholds
 TARGET_DIST_MM = 220        # Target distance from wall (22cm)
 CORNER_SPIKE_THRESH = 1000  # Distance spike (mm) that triggers a corner turn
 TURN_DURATION = 0.20        # Seconds to hold hard turn during corner
-TURN_COOLDOWN = 0.60        # CRITICAL FIX: Seconds to IGNORE new corner spikes after turning!
+TURN_COOLDOWN = 0.80        # CRITICAL FIX: Seconds to IGNORE new corner spikes after turning!
 
 # Smoother PID Gains
 Kp = 0.25
@@ -34,16 +34,16 @@ STEERING_MAX = 135          # Full Left Turn
 BASE_THROTTLE = 1665
 STOP_THROTTLE = 1500
 
-# Vision Config (Orange Line Lap Counter)
+# Fixed HSV Vision Config (Correct RGB-to-HSV Mapping)
 LOWER_ORANGE = np.array([5, 120, 120])
 UPPER_ORANGE = np.array([22, 255, 255])
 ORANGE_PIXEL_THRESHOLD = 1200
 
 # ---------- Setup ----------
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(LEFT_TRIG, GPIO.OUT)
-GPIO.setup(LEFT_ECHO, GPIO.IN)
-GPIO.output(LEFT_TRIG, False)
+GPIO.setup(RIGHT_TRIG, GPIO.OUT)
+GPIO.setup(RIGHT_ECHO, GPIO.IN)
+GPIO.output(RIGHT_TRIG, False)
 
 print("Connecting to Arduino & Camera...")
 ser = serial.Serial(ARDUINO_PORT, BAUD_RATE, timeout=1)
@@ -72,23 +72,23 @@ last_turn_end_time = 0  # Tracks when the previous turn completed
 def send_to_arduino(throttle, steer):
     ser.write(f"{int(steer)},{int(throttle)}\n".encode())
 
-def get_left_distance():
-    """Reads distance from left sensor. Returns None on timeout/wall loss."""
+def get_right_distance():
+    """Reads distance from right sensor. Returns None on timeout/wall loss."""
     try:
-        GPIO.output(LEFT_TRIG, True)
+        GPIO.output(RIGHT_TRIG, True)
         time.sleep(0.00001)
-        GPIO.output(LEFT_TRIG, False)
+        GPIO.output(RIGHT_TRIG, False)
         
         pulse_start = time.time()
         timeout = time.time()
         
-        while GPIO.input(LEFT_ECHO) == 0:
+        while GPIO.input(RIGHT_ECHO) == 0:
             pulse_start = time.time()
             if pulse_start - timeout > 0.025:
                 return None
                 
         pulse_end = time.time()
-        while GPIO.input(LEFT_ECHO) == 1:
+        while GPIO.input(RIGHT_ECHO) == 1:
             pulse_end = time.time()
             if pulse_end - pulse_start > 0.025:
                 return None
@@ -112,7 +112,7 @@ def smooth_pid(error, prev_error, integral, prev_derivative, kp, ki, kd, dt):
 # ---------- Main Loop ----------
 try:
     print("\n==================================================")
-    print("🚀 MC-SQUARED: SINGLE-SENSOR FOLLOW (COOLDOWN PROTECTED)")
+    print("🚀 MC-SQUARED: RIGHT-WALL FOLLOW (COOLDOWN PROTECTED)")
     print("==================================================\n")
     
     while True:
@@ -148,9 +148,9 @@ try:
         # --- 2. ACTIVE CORNER TURN STATE OVERRIDE ---
         if is_turning:
             if current_time - turn_start_time < TURN_DURATION:
-                # Lock steering and bypass all wall reading/PID logic
-                send_to_arduino(BASE_THROTTLE, STEERING_MAX)
-                print(f"🌀 EXECUTING TURN ({current_time - turn_start_time:.2f}s)", end="\r")
+                # Lock steering hard right (STEERING_MIN = 45°) and bypass PID
+                send_to_arduino(BASE_THROTTLE, STEERING_MIN)
+                print(f"🌀 EXECUTING RIGHT TURN ({current_time - turn_start_time:.2f}s)", end="\r")
                 time.sleep(dt)
                 continue
             else:
@@ -164,7 +164,7 @@ try:
                 filtered_derivative = 0
 
         # --- 3. WALL FOLLOW & PROTECTED CORNER SPIKE DETECTION ---
-        dist = get_left_distance()
+        dist = get_right_distance()
 
         # CHECK IF COOLDOWN IS STILL ACTIVE (Lockout re-triggers)
         in_cooldown = (current_time - last_turn_end_time) < TURN_COOLDOWN
@@ -173,8 +173,8 @@ try:
         if not in_cooldown and (dist is None or dist >= CORNER_SPIKE_THRESH):
             is_turning = True
             turn_start_time = current_time
-            print(f"\n🚨 CORNER SPIKE DETECTED ({dist}) -> Hard Turn Initiated!")
-            send_to_arduino(BASE_THROTTLE, STEERING_MAX)
+            print(f"\n🚨 CORNER SPIKE DETECTED ({dist}) -> Hard Right Turn Initiated!")
+            send_to_arduino(BASE_THROTTLE, STEERING_MIN)
             continue
 
         # If sensor drops to None during normal straightaways or cooldown, hold center
@@ -185,7 +185,7 @@ try:
             continue
 
         # --- 4. SMOOTH PID WALL FOLLOWING ---
-        error = dist - TARGET_DIST_MM  # Negative = Too close to wall
+        error = dist - TARGET_DIST_MM  # Negative = Too close to right wall
         control, integral, filtered_derivative = smooth_pid(
             error, prev_error, integral, filtered_derivative, Kp, Ki, Kd, dt
         )
@@ -193,7 +193,9 @@ try:
 
         control = max(min(control, 400), -400)
 
-        steering_angle = STEERING_CENTER + (control / 400.0) * (STEERING_MAX - STEERING_CENTER)
+        # Inverted Steering for Right Wall:
+        # Drifting close (negative error) -> Steer LEFT (< 90 deg)
+        steering_angle = STEERING_CENTER - (control / 400.0) * (STEERING_MAX - STEERING_CENTER)
         steering_angle = max(min(steering_angle, STEERING_MAX), STEERING_MIN)
 
         send_to_arduino(BASE_THROTTLE, steering_angle)
