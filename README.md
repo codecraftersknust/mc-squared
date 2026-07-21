@@ -7,11 +7,15 @@
 
 ## Introduction
 
-Welcome to the official repository of **mc-squared**. We are a passionate robotics team competing in the **2026 World Robot Olympiad (WRO) Future Engineers Challenge**. 
+Welcome to the official repository of **mc-squared**, a passionate robotics team competing in the **2026 World Robot Olympiad (WRO) Future Engineers Challenge**.
 
-We hope our approach to the 2026 WRO Future Engineers Challenge provides some insights to you in whichever endeavor you might be on and inspire future participants. 
+Our mission is to design and build a reliable, fully autonomous vehicle capable of combining advanced computer vision with precise and intelligent driving. Through continuous iteration, innovation, and teamwork, we strive to create a seamless integration of robust hardware and intelligent software.
 
-Explore and learn on our repository and also, feel free to reach out to us with any questions through our contacts provided below.
+This repository documents our design process, technical decisions, and development journey throughout the competition. We hope our work provides valuable insights for fellow robotics enthusiasts, future WRO participants, and anyone interested in autonomous systems.
+
+Feel free to explore our repository, learn from our approach, and reach out to us using the contact information provided below if you have any questions or would like to connect.
+
+Thank you for visiting, and we hope our journey inspires yours!
 
 ---
 
