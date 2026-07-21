@@ -48,7 +48,7 @@ This repository contains all open-source engineering materials, code bases, and 
 - `video/` — Contains `video.md` enclosing the official YouTube demonstration link of our vehicle executing autonomous laps.
 - `schemes/` — High-definition electromechanical schematic diagrams outlining pinouts, shared grounding, and logic-to-high-power isolation.
 - `src/` — Production source code separated by processing layers (Python for high-level logic, C++ for real-time motor control).
-- `models/` — Parametric 3D print `.STL` files for custom steering components, camera mounts, and Lidar stability decks.
+- `models/` — Parametric 3D print `.STL` files for custom steering components, camera mounts level deck mounts.
 - `other/` — Technical datasets, local calibration sheets, and secure headless connection guides (SSH over direct Ethernet link).
 
 ---
